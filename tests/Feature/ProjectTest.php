@@ -100,7 +100,7 @@ class ProjectTest extends TestCase
 
         $response = $this->deleteJson("/api/projects/{$project->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
     }
 

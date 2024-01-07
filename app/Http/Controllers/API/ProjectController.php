@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Member;
 use App\Models\Project;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -131,7 +131,7 @@ class ProjectController extends Controller
             $project->members()->detach();
             $project->delete();
 
-            return response()->json(['success' => true, 'message' => "Project deleted successfully. Members were also removed from the project"], 204);
+            return response()->json(['success' => true, 'message' => "Project deleted successfully. Members were also removed from the project"], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Project not found', 'success' => false], 404);
         } catch (\Throwable $th) {
@@ -158,8 +158,7 @@ class ProjectController extends Controller
 
             if ($validator->fails()) {
                 // // Manually check for invalid member IDs
-                if(is_array($request->members) && count($request->members) > 0)
-                {
+                if (is_array($request->members) && count($request->members) > 0) {
                     $invalidIds = array_filter($request->members, function ($id) {
                         return !Member::whereNull('deleted_at')->find($id);
                     });
@@ -172,7 +171,7 @@ class ProjectController extends Controller
                 return response()->json($validator->errors(), 422);
             }
 
-  
+
 
 
             $project = DB::transaction(function () use ($request, $project) {
@@ -237,6 +236,4 @@ class ProjectController extends Controller
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
-
-    
 }

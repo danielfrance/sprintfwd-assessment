@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\MemberResource;
 use App\Models\Member;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -41,24 +42,22 @@ class MemberController extends Controller
             'team_id' => [
                 'required',
                 'integer',
-                Rule::exists('teams','id')->whereNull('deleted_at'),
+                Rule::exists('teams', 'id')->whereNull('deleted_at'),
             ]
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         } else {
-            
+
             try {
                 $member = DB::transaction(function () use ($request) {
                     $member = Member::create($request->all());
 
                     return $member;
-                    
                 });
 
                 return response()->json(['success' => true, 'message' => "Member created successfully", 'data' => new MemberResource($member)], 201);
-                
             } catch (\Throwable $th) {
                 Log::error($th);
                 return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
@@ -75,8 +74,7 @@ class MemberController extends Controller
             return new MemberResource(Member::with('projects')->findOrFail($id));
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Member not found'], 404);
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
@@ -123,10 +121,9 @@ class MemberController extends Controller
             });
 
             return response()->json(['success' => true, 'message' => "Team updated successfully", 'data' => new MemberResource($member)], 200);
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Member not found', 'success' => false], 404);
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
@@ -136,18 +133,16 @@ class MemberController extends Controller
      */
     public function destroy(string $id)
     {
-        
+
         try {
             $member = Member::findOrFail($id);
             $message = 'Member ' . $member->name . ' deleted successfully';
 
             $member->delete();
-            return response()->json(['message' => $message, 'success' => true], 204);
-
-        } catch (ModelNotFoundException $e){
+            return response()->json(['message' => $message, 'success' => true], 200);
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Member not found', 'success' => false], 404);
-        } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
@@ -180,13 +175,10 @@ class MemberController extends Controller
             });
 
             return response()->json(['success' => true, 'message' => "Member team updated successfully", 'data' => new MemberResource($member)], 200);
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Member not found', 'success' => false], 404);
-        } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
-
-
 }

@@ -138,7 +138,7 @@ class MemberTest extends TestCase
 
         $response = $this->deleteJson("/api/members/{$member->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
     }
 

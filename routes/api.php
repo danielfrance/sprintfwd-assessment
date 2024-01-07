@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\MemberController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\TeamController;
+use App\Http\Controllers\API\TeamController;
+use App\Http\Controllers\API\MemberController;
+use App\Http\Controllers\API\ProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

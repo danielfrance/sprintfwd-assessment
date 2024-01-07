@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
 
 use App\Http\Resources\MemberResource;
 use App\Http\Resources\TeamResource;
@@ -43,7 +45,7 @@ class TeamController extends Controller
         } else {
             try {
                 $team = Team::create($request->all());
-                return response()->json(['success' => true, 'message' => "Team created successfully", 'data' => new TeamResource($team)] , 201);
+                return response()->json(['success' => true, 'message' => "Team created successfully", 'data' => new TeamResource($team)], 201);
             } catch (\Throwable $th) {
                 return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
             }
@@ -84,7 +86,7 @@ class TeamController extends Controller
 
             if ($validator->fails()) {
                 return response()->json($validator->errors(), 422);
-            } 
+            }
 
             $team = DB::transaction(function () use ($request, $team) {
                 $team->update($request->all());
@@ -92,11 +94,9 @@ class TeamController extends Controller
             });
 
             return response()->json(['success' => true, 'message' => "Team updated successfully", 'data' => new TeamResource($team)], 200);
-
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Team not found', 'success' => false], 404);
-        } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
@@ -106,7 +106,7 @@ class TeamController extends Controller
      */
     public function destroy(string $id)
     {
-        
+
         try {
             $team = new TeamResource(Team::findOrFail($id));
             $message = 'Team ' . $team->name . ' deleted successfully';
@@ -116,18 +116,15 @@ class TeamController extends Controller
 
                 $membersResource = MemberResource::collection($team->members);
 
-                
+
                 return response()->json(['message' => 'This Team has active members. Delete or reassign the members first', 'success' => false, 'data' => $membersResource], 422);
             } else {
                 $team->delete();
-                return response()->json(['message' => $message, 'success' => true], 204);
+                return response()->json(['message' => $message, 'success' => true], 200);
             }
-
-            
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Team not found', 'success' => false], 404);
-        } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
     }
@@ -143,12 +140,10 @@ class TeamController extends Controller
 
             $members = $team->members;
             return response()->json(['success' => true, 'data' => $members], 200);
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Team not found', 'success' => false], 404);
-        } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage(), 'success' => false], 500);
         }
-    
     }
 }

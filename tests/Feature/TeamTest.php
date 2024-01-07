@@ -116,7 +116,7 @@ class TeamTest extends TestCase
 
         $response = $this->deleteJson("/api/teams/{$team->id}");
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
 
     }
 

@@ -57,6 +57,7 @@ class TeamController extends Controller
      */
     public function show(string $id)
     {
+        
         try {
             return new TeamResource(Team::with('members')->findOrFail($id));
         } catch (\Throwable $th) {
